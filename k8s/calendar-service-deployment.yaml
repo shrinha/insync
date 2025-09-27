@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calendar-service
+  labels:
+    app: calendar-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: calendar-service
+  template:
+    metadata:
+      labels:
+        app: calendar-service
+    spec:
+      containers:
+      - name: calendar-service
+        image: insync/calendar-service:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: PORT
+          value: "8081"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calendar-service
+spec:
+  selector:
+    app: calendar-service
+  ports:
+  - port: 80
+    targetPort: 8081
+  type: ClusterIP
