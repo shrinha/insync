@@ -283,7 +283,7 @@ export default function Home() {
                           Create new business Reservation
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Founder, or business looking to collaborate with Cal.com? Let's chat!
+                          Founder, or business looking to collaborate with Insync? Let's chat!
                         </p>
                       </div>
                     </div>

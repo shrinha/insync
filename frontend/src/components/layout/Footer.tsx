@@ -147,11 +147,11 @@ export default function Footer() {
 
         <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-muted-foreground" data-testid="footer-copyright">
-            &copy; 2024 DataSync. All rights reserved.
+            &copy; 2025 Insync. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a
-              href="#"
+              href="https://x.com/?lang=en"
               className="text-muted-foreground hover:text-foreground transition-colors"
               data-testid="footer-twitter"
             >
@@ -160,7 +160,7 @@ export default function Footer() {
               </svg>
             </a>
             <a
-              href="#"
+              href="https://in.linkedin.com/in/shrinha"
               className="text-muted-foreground hover:text-foreground transition-colors"
               data-testid="footer-linkedin"
             >
@@ -169,7 +169,7 @@ export default function Footer() {
               </svg>
             </a>
             <a
-              href="#"
+              href="https://github.com/shrinha/insync"
               className="text-muted-foreground hover:text-foreground transition-colors"
               data-testid="footer-github"
             >
