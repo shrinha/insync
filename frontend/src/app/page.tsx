@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/homeButton";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Globe, Share2, Bot, Clock, TrendingUp, Shield, Star, Rocket, Menu } from "lucide-react";
@@ -179,7 +179,7 @@ export default function Home() {
                   data-testid="badge-launch"
                 >
                   <Rocket className="mr-2 h-4 w-4" />
-                  Insync launches v2.7
+                  Insync launches v1.1
                 </Badge>
                 <h1
                   className="text-4xl lg:text-6xl font-bold leading-tight"
