@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Globe, Share2, Bot, Clock, TrendingUp, Shield, Star, Rocket, Menu } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 import Footer from "@/components/layout/Footer";
 import CalendarPreview from "@/components/CalendarPreview";
 
@@ -72,17 +73,19 @@ export default function Home() {
 
             <div className="flex items-center space-x-4">
               <Button
+                asChild
                 variant="ghost"
                 className="text-muted-foreground hover:text-foreground"
                 data-testid="button-signin"
               >
-                Sign in
+                <Link href="/auth/login">Sign in</Link>
               </Button>
               <Button
+                asChild
                 className="bg-primary text-primary-foreground hover:bg-primary/90 hover-lift"
                 data-testid="button-get-started"
               >
-                Get started
+                <Link href="/auth/signup">Get started</Link>
               </Button>
             </div>
 
@@ -149,17 +152,19 @@ export default function Home() {
                 </nav>
                 <div className="flex flex-col space-y-2 pt-4 border-t border-border">
                   <Button
+                    asChild
                     variant="ghost"
                     className="justify-start"
                     data-testid="mobile-button-signin"
                   >
-                    Sign in
+                    <Link href="/auth/login">Sign in</Link>
                   </Button>
                   <Button
+                    asChild
                     className="justify-start bg-primary text-primary-foreground hover:bg-primary/90"
                     data-testid="mobile-button-get-started"
                   >
-                    Get started
+                    <Link href="/auth/signup">Get started</Link>
                   </Button>
                 </div>
               </div>
