@@ -1,0 +1,4 @@
+/* Optional styles for CalendarPreview. Kept minimal; most styling is via Tailwind classes. */
+.calendar-preview {
+  display: block;
+}
