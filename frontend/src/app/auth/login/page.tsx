@@ -6,6 +6,7 @@ import Link from "next/link";
 import AuthLayout from "../auth-layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/homeButton";
+import { Eye, EyeOff } from "@/components/ui/showPassIcon";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,6 +14,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  let passwordAriaLabel = "Show password";
+  if (showPassword) passwordAriaLabel = "Hide password";
 
   const handleLogin = async () => {
     setError("");
@@ -113,48 +116,10 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((s) => !s)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer hover:opacity-80 transition-opacity"
+                  aria-label={passwordAriaLabel}
                 >
-                  {showPassword ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M13.875 18.825A10.05 10.05 0 0 1 12 19.5c-9 0-12-7.5-12-7.5S3 4.5 12 4.5c1.2 0 2.356.15 3.438.435"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                  )}
+                  {showPassword ? <EyeOff /> : <Eye />}
                 </button>
               </div>
             </div>
@@ -168,7 +133,10 @@ export default function LoginPage() {
         </div>
 
         <div className="text-center mt-6 text-sm text-muted-foreground">
-          {"Don't have an account?"}
+          {"Don't have an account? "}
+          <Link href="/auth/signup" className="underline">
+            Sign up
+          </Link>
         </div>
       </div>
     </AuthLayout>
