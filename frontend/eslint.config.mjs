@@ -20,6 +20,8 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  // Integrate Prettier: turn off rules that may conflict and surface Prettier issues as ESLint problems
+  ...compat.extends("plugin:prettier/recommended"),
 ];
 
 export default eslintConfig;

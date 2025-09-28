@@ -1,0 +1,18 @@
+# Node build outputs
+.next
+out
+build
+
+# Dependencies
+node_modules
+
+# Logs
+*.log
+
+# Env
+.env*
+
+# Editor/project files
+.vscode
+.idea
+.DS_Store
