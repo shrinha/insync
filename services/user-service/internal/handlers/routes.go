@@ -2,28 +2,15 @@ package handlers
 
 import (
 	"database/sql"
-	"encoding/json"
 	"net/http"
 
 	config "insync/user-service/configs"
-	"insync/user-service/internal/auth"
-	"insync/user-service/internal/models"
+	"insync/user-service/internal/repo"
 
-	"golang.org/x/crypto/bcrypt"
-
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
-type signupRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type loginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
+// Handler-specific request types moved to their own files.
 
 // RegisterRoutes returns an http.Handler for the service. It requires an open DB and a JWT secret.
 func RegisterRoutes(cfg *config.Config, db *sql.DB, jwtSecret string) http.Handler {
@@ -34,64 +21,12 @@ func RegisterRoutes(cfg *config.Config, db *sql.DB, jwtSecret string) http.Handl
 		_, _ = w.Write([]byte("ok"))
 	}).Methods("GET")
 
-	r.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
-		var req signupRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "invalid request", http.StatusBadRequest)
-			return
-		}
-		if req.Email == "" || req.Password == "" {
-			http.Error(w, "email and password required", http.StatusBadRequest)
-			return
-		}
+	// Create repo implementation and wire into handlers
+	rdb := repo.NewPostgresRepo(db)
 
-		id := uuid.NewString()
-		if err := models.CreateUser(db, id, req.Email, req.Password); err != nil {
-			http.Error(w, "failed to create user", http.StatusInternalServerError)
-			return
-		}
+	r.HandleFunc("/signup", SignupHandler(cfg, rdb, jwtSecret)).Methods("POST")
 
-		token, err := auth.CreateToken(id, jwtSecret)
-		if err != nil {
-			http.Error(w, "failed to create token", http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"token": token})
-	}).Methods("POST")
-
-	r.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		var req loginRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "invalid request", http.StatusBadRequest)
-			return
-		}
-		if req.Email == "" || req.Password == "" {
-			http.Error(w, "email and password required", http.StatusBadRequest)
-			return
-		}
-
-		id, hashed, err := models.GetUserByEmail(db, req.Email)
-		if err != nil {
-			http.Error(w, "invalid credentials", http.StatusUnauthorized)
-			return
-		}
-
-		if err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(req.Password)); err != nil {
-			http.Error(w, "invalid credentials", http.StatusUnauthorized)
-			return
-		}
-
-		token, err := auth.CreateToken(id, jwtSecret)
-		if err != nil {
-			http.Error(w, "failed to create token", http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"token": token})
-	}).Methods("POST")
+	r.HandleFunc("/login", LoginHandler(cfg, rdb, jwtSecret)).Methods("POST")
 
 	return r
 }
