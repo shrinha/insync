@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -28,11 +29,11 @@ func Load() *Config {
 	// Try to load .env file in the current working directory; ignore error if it doesn't exist.
 	_ = godotenv.Load()
 
-	return &Config{
+	cfg := &Config{
 		Port: getEnv("PORT", "8080"),
 
 		DBUser:   getEnv("DB_USER", getEnv("POSTGRES_USER", "user")),
-		DBName:   getEnv("DB_NAME", getEnv("POSTGRES_DB", "postgres")),
+		DBName:   getEnv("DB_NAME", getEnv("POSTGRES_DB", "insync_db")),
 		DBSocket: getEnv("DB_SOCKET", "/tmp"),
 		DBPort:   getEnv("DB_PORT", "5432"),
 		SSLMode:  getEnv("DB_SSLMODE", "disable"),
@@ -40,6 +41,9 @@ func Load() *Config {
 
 		JwtSecret: getEnv("JWT_SECRET", "supersecretkey"),
 	}
+	// Log DB connection string for debugging
+	log.Printf("DB connection string: %s", cfg.ConnString())
+	return cfg
 }
 
 func getEnv(key, fallback string) string {

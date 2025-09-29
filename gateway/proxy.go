@@ -23,23 +23,21 @@ func newReverseProxy(target string) (*httputil.ReverseProxy, error) {
 }
 
 // addProxyRoutes wires simple proxy endpoints to the mux.
-func addProxyRoutes(mux *http.ServeMux) error {
+func addProxyRoutes(mux *http.ServeMux, cfg Config) error {
 	// Auth (no auth required)
-	userTarget := Getenv("USER_SERVICE_URL", "http://host.docker.internal:8081")
-	userProxy, err := newReverseProxy(userTarget)
+	userProxy, err := newReverseProxy(cfg.UserServiceURL)
 	if err != nil {
 		return err
 	}
 	mux.Handle("/auth/", http.StripPrefix("/auth", userProxy))
 
 	// Protected API proxied to other service with middleware applied in main
-	otherTarget := Getenv("OTHER_SERVICE_URL", "http://localhost:8082")
-	otherProxy, err := newReverseProxy(otherTarget)
+	otherProxy, err := newReverseProxy(cfg.OtherServiceURL)
 	if err != nil {
 		return err
 	}
 	mux.Handle("/api/", otherProxy)
 
-	log.Printf("proxy routes configured: auth->%s api->%s", userTarget, otherTarget)
+	log.Printf("proxy routes configured: auth->%s api->%s", cfg.UserServiceURL, cfg.OtherServiceURL)
 	return nil
 }
