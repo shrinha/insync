@@ -24,7 +24,7 @@ func RegisterRoutes(cfg *config.Config, db *sql.DB, jwtSecret string) http.Handl
 	// Create repo implementation and wire into handlers
 	rdb := repo.NewPostgresRepo(db)
 
-	r.HandleFunc("/signup", SignupHandler(cfg, rdb, jwtSecret)).Methods("POST")
+	r.HandleFunc("/signup", SignupHandler(cfg, rdb)).Methods("POST")
 
 	r.HandleFunc("/login", LoginHandler(cfg, rdb, jwtSecret)).Methods("POST")
 

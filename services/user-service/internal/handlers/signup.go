@@ -8,7 +8,6 @@ import (
 	"time"
 
 	config "insync/user-service/configs"
-	"insync/user-service/internal/auth"
 	"insync/user-service/internal/repo"
 
 	"golang.org/x/crypto/bcrypt"
@@ -20,7 +19,7 @@ type signupRequest struct {
 }
 
 // SignupHandler handles user signup requests.
-func SignupHandler(cfg *config.Config, rRepo repo.UserRepo, jwtSecret string) http.HandlerFunc {
+func SignupHandler(cfg *config.Config, rRepo repo.UserRepo) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req signupRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -42,7 +41,7 @@ func SignupHandler(cfg *config.Config, rRepo repo.UserRepo, jwtSecret string) ht
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
-		newID, err := rRepo.CreateUser(ctx, req.Email, string(hashed))
+		_, err = rRepo.CreateUser(ctx, req.Email, string(hashed))
 		if err != nil {
 			// Log underlying DB error for diagnostics
 			log.Printf("CreateUser error for email=%s: %v", req.Email, err)
@@ -50,14 +49,9 @@ func SignupHandler(cfg *config.Config, rRepo repo.UserRepo, jwtSecret string) ht
 			return
 		}
 
-		token, err := auth.CreateToken(newID, jwtSecret)
-		if err != nil {
-			log.Printf("CreateToken error for user=%s: %v", newID, err)
-			http.Error(w, "failed to create token", http.StatusInternalServerError)
-			return
-		}
-
+		// on successful signup, return a simple creation acknowledgement
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"token": token})
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(map[string]string{"message": "user created"})
 	}
 }
