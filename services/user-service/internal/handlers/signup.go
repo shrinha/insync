@@ -3,10 +3,9 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
-
-	"github.com/google/uuid"
 
 	config "insync/user-service/configs"
 	"insync/user-service/internal/auth"
@@ -33,7 +32,6 @@ func SignupHandler(cfg *config.Config, rRepo repo.UserRepo, jwtSecret string) ht
 			return
 		}
 
-		id := uuid.NewString()
 		// Hash password before passing to repo
 		hashed, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 		if err != nil {
@@ -44,13 +42,17 @@ func SignupHandler(cfg *config.Config, rRepo repo.UserRepo, jwtSecret string) ht
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
-		if err := rRepo.CreateUser(ctx, id, req.Email, string(hashed)); err != nil {
+		newID, err := rRepo.CreateUser(ctx, req.Email, string(hashed))
+		if err != nil {
+			// Log underlying DB error for diagnostics
+			log.Printf("CreateUser error for email=%s: %v", req.Email, err)
 			http.Error(w, "failed to create user", http.StatusInternalServerError)
 			return
 		}
 
-		token, err := auth.CreateToken(id, jwtSecret)
+		token, err := auth.CreateToken(newID, jwtSecret)
 		if err != nil {
+			log.Printf("CreateToken error for user=%s: %v", newID, err)
 			http.Error(w, "failed to create token", http.StatusInternalServerError)
 			return
 		}

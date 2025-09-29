@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -15,16 +16,22 @@ func NewPostgresRepo(db *sql.DB) UserRepo {
 	return &pgRepo{db: db}
 }
 
-func (p *pgRepo) CreateUser(ctx context.Context, id, email, hashedPassword string) error {
-	_, err := p.db.ExecContext(ctx, `INSERT INTO users (id, email, password, created_at) VALUES ($1,$2,$3,$4)`, id, email, hashedPassword, time.Now())
-	return err
+func (p *pgRepo) CreateUser(ctx context.Context, email, hashedPassword string) (string, error) {
+	// Insert and return the generated integer id
+	var newID int
+	err := p.db.QueryRowContext(ctx, `INSERT INTO users (email, password_hash, created_at) VALUES ($1,$2,$3) RETURNING id`, email, hashedPassword, time.Now()).Scan(&newID)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%d", newID), nil
 }
 
 func (p *pgRepo) GetUserByEmail(ctx context.Context, email string) (string, string, error) {
-	var id, hashed string
-	row := p.db.QueryRowContext(ctx, `SELECT id, password FROM users WHERE email = $1`, email)
+	var id int
+	var hashed string
+	row := p.db.QueryRowContext(ctx, `SELECT id, password_hash FROM users WHERE email = $1`, email)
 	if err := row.Scan(&id, &hashed); err != nil {
 		return "", "", err
 	}
-	return id, hashed, nil
+	return fmt.Sprintf("%d", id), hashed, nil
 }
