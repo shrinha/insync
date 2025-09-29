@@ -38,9 +38,13 @@ export default function SignupPage() {
       const data = await res.json();
 
       if (res.ok) {
-        router.push("/dashboard"); // redirect after signup
+        router.push("/auth/signup-success"); // redirect to signup success page
       } else {
-        setError(data.message || "Signup failed");
+        if (res.status === 409) {
+          setError("Email already exists");
+        } else {
+          setError(data.message || "Signup failed");
+        }
       }
     } catch (err) {
       console.error(err);
