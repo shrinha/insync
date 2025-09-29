@@ -4,7 +4,7 @@ This is a small user service. It expects a PostgreSQL instance reachable via a u
 
 Defaults (can be overridden with env vars):
 
-- DB_USER / POSTGRES_USER: pankaj
+- DB_USER / POSTGRES_USER: user
 - DB_NAME / POSTGRES_DB: postgres
 - DB_SOCKET: /tmp
 - DB_PORT: 5432
@@ -14,7 +14,7 @@ Defaults (can be overridden with env vars):
 Example run (macOS / local postgres listening on unix socket /tmp):
 
 ```bash
-export DB_USER=pankaj
+export DB_USER=user
 export DB_NAME=postgres
 export DB_SOCKET=/tmp
 export DB_PORT=5432
